@@ -1,0 +1,93 @@
+
+
+var HomeLayout = Backbone.Marionette.Layout.extend({
+    template: "#homeTemplate",
+
+    regions: {
+	tabRegion: "#homeTabs"
+    },
+
+    initialize: function(options) {
+	this.vent = options.vent;
+
+	this.usersInfoCollection = options.usersInfoCollection;
+	this.gamesInfoCollection = options.gamesInfoCollection;
+    },
+
+    
+    onShow: function() {
+	this.tabRegion.show(new HomeTabView({
+	    vent: this.vent,
+	    usersCollection: this.usersInfoCollection,
+	    gamesCollection: this.gamesInfoCollection,
+	}));
+    }
+});
+
+var HomeTabView = Backbone.Marionette.Layout.extend({
+    template: "#homeTabTemplate",
+
+    events: {
+	"click #playNow": "playNowClick"
+    },
+    
+    regions: {
+	usersRegion: "#userlist",
+	gamesRegion: "#gamelist",
+    },
+
+    initialize: function(options) {
+	this.vent = options.vent;
+
+	this.usersCollection = options.usersCollection;
+	this.gamesCollection = options.gamesCollection;
+    },
+
+    onShow: function() {
+	this.usersRegion.show(new UsersCollectionView({ collection: this.usersCollection }));
+	this.gamesRegion.show(new GameInfoCollectionView({ collection: this.gamesCollection }));
+	
+    },
+
+    playNowClick: function() {
+	this.vent.trigger("playNowClick");
+    }
+});
+
+
+var GameInfoView = Backbone.Marionette.ItemView.extend({
+    template: "#gameInfoTemplate",
+
+    className: "list-group-item"
+});
+
+var GameInfoCollectionView = Backbone.Marionette.CollectionView.extend({
+    itemView: GameInfoView
+});
+
+var UserView = Backbone.Marionette.ItemView.extend({
+    template: "#userTemplate",
+
+    className: "list-group-item"
+});
+
+var UsersCollectionView = Backbone.Marionette.CollectionView.extend({
+    itemView: UserView
+});
+
+var LoginView = Backbone.Marionette.ItemView.extend({
+    template: '#loginTemplate',
+
+    events: {
+	'click #loginButton': 'onLoginClick'
+    },
+
+    initialize: function(options) {
+	this.vent = options.vent;
+    },
+
+    onLoginClick: function(evt) {
+	this.vent.trigger("loginClick");
+    }
+});
+

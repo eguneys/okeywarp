@@ -1,0 +1,87 @@
+
+
+
+function x() {
+
+    var stoneHeight = 64;
+    var stoneWidth = 48;
+    
+    var draggables = Draggable.create(".stone", {
+	bounds: ".stoneContainer",
+       type: "top,left",
+	throwProps: true,
+	edgeResistance: 0.01,
+	maxDuration: 0.5,
+	snap: {
+	        x: function(endValue) {
+		    endValue += stoneWidth / 2;
+		    if (endValue < stoneWidth) return stoneWidth;
+		    else if (endValue < 675) return Math.round(endValue / stoneWidth) * stoneWidth;
+		    return 675;
+		        },
+	        y: function(endValue) {
+		    endValue += stoneHeight / 2;
+		    return endValue>stoneHeight?stoneHeight:0;
+		        }
+	    },
+       onDragStart: function() {
+	      
+       },
+
+	onDragEnd: function(evt) {
+	    var pos = {};
+
+	    pos.x = evt.pageX;
+	    pos.y = evt.pageY;
+
+	    var isHit = $('.throwBottom').hitTestPoint({x:pos.x, y:pos.y});
+
+	    console.log(isHit);
+	}
+    });
+
+    Draggable.create(".middleStone", {
+	bounds: ".drawMiddle",
+	type: "top,left",
+	edgeResistance: 0.01,
+	throwProps: true,
+	maxDuration: 0.5,
+
+	onDragEnd: function(evt) {
+
+	    var pos = {};
+
+	    pos.x = evt.pageX;
+	    pos.y = evt.pageY;
+	    
+	    var isHit = $('.stoneContainer').hitTestPoint({x: pos.x, y: pos.y });
+
+	    
+
+	}
+    });
+
+
+    
+    Draggable.create(".drawStone", {
+	bounds: ".throwLeft",
+	type: "top,left",
+	edgeResistance: 0.01,
+	throwProps: true,
+	maxDuration: 0.5,
+
+	onDragEnd: function(evt) {
+
+	    var pos = {};
+
+	    pos.x = evt.pageX;
+	    pos.y = evt.pageY;
+	    
+	    var isHit = $('.stoneContainer').hitTestPoint({x: pos.x, y: pos.y });
+
+	    console.log(isHit);
+
+	}
+    });
+
+}

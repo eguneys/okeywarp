@@ -1,0 +1,5 @@
+var TabModel = Backbone.Model.extend({});
+
+var TabCollection = Backbone.Collection.extend({
+    model: TabModel
+});

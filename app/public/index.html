@@ -3,11 +3,144 @@
 <head>
 <meta charset="utf-8">
 <title>Sample Socket.io Chat Application</title>
+
+  <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
   
+
+  <div class="container" id="container">
+    
+  </div>
+
+  <script type='text/template' id="loginTemplate">
+    <div class="container">
+      Login
+      <button class="btn" id="loginButton">Login</button>
+    </div>
+  </script>
+
+  <script type='text/template' id="homeTemplate">
+    <div class="container">
+      <div class="row">
+	<div class="col-md-2">
+	  
+	</div>
+	<div class="col-md-10" id="homeTabs">
+	  
+	</div>
+      </div>
+    </div>
+  </script>
   
+  <script type='text/template' id="homeTabTemplate">
+    <div class="container">
+      <div class="row">
+		<div class="col-md-8">
+		  <button class="btn btn-block btn-lg" id="playNow"> Play Now </button>
+		</div>
+		<div class="col-md-4">
+		  <ul class="nav nav-tabs" id="UsersTab">
+		    <li class="active"><a href="#users" data-toggle="tab">Users</a></li>
+		    <li><a href="#games" data-toggle="tab">Games</a></li>
+		  </ul>
+
+		  <div class="tab-content">
+		    <div class="tab-pane active" id="users">
+		      <div class="list-group" id="userlist">
+			
+		      </div>
+		    </div>
+		    <div class="tab-pane" id="games">
+		      <div class="list-group" id="gamelist">
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	      </div>
+    </div>
+  </script>
+
+  <script type='text/template' id="userTemplate">
+    <a><%= name %></a>
+    <span class="label label-info pull-right"><%= score %></span>
+    <div class="clearfix"></div>
+  </script>
+
+  <script type='text/template' id="gameInfoTemplate">
+    <a> <%= name %> </a>
+  </script>
   
+  <script type='text/template' id="gameLayoutTemplate">  
+       <div class="container">
+	 <div class="row">
+	   <div class="col-md-12">
+	     <div class="gameTable">
+
+	       <div class="middleContainer">
+		 <div class="throwStone throwLeft"></div>
+		 <div class="throwStone throwBottom"></div>
+		 <div class="throwStone throwTop"></div>
+		 <div class="throwStone throwRight"></div>
+		 <div class="throwStone drawMiddle">
+		   <div class="stone middleStone"></div>
+		 </div>
+		 <div class="throwStone gosterge">
+		   
+		 </div>
+	       </div>
+
+	       <div class="playersContainer">
+	       </div>
+
+	       <div class="stonesContainer"></div>
+	     </div>
+	   </div>
+	 </div>
+       </div>
+  </script>
+
+  <script type='text/template' id="playerTemplate">
+    <div class="seat p<%=side%>">
+      <div class="playerImage"> <img src="<%= photo %>"></img></div>
+      <div class="playerGloss"></div>
+      <div class="playerName"><%= name %></div>
+      <div class="playerProgress progress <% if (turnLeft == 0) { %> hide <% } %> ">
+	<div class="progress-bar" style="width: <%= turnLeft %>%"></div>
+      </div>
+    </div>
+  </script>
+
+
+  <script type='text/template' id="stoneTemplate">
+    <div class="stone stone<%= stoneType %>"></div>
+  </script>
+
+  <script src="/bower_components/jquery/jquery.min.js"></script>
+  <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+  <script src="/bower_components/smartJQueryHitTest/src/e-smart-hittest-jquery.min.js"></script>
+  
+  <script src="/bower_components/underscore/underscore.js"></script>
+  <script src="/bower_components/backbone/backbone.js"></script>
+  <script src="/bower_components/marionette/lib/backbone.marionette.js"></script>
+
+  <script src="/bower_components/greensock/src/uncompressed/TweenMax.js"></script>
+  <script src="/js/lib/throwPropsPlugin.min.js"></script>
+  <script src="/bower_components/greensock/src/uncompressed/utils/Draggable.js"></script>
+
+
+  <script src="/js/models/main.js"></script>
+  <script src="/js/models/game.js"></script>
+
+  <script src="/js/util.js"></script>
+  
+  <script src="/js/views/game.js"></script>
+  <script src="/js/views/main.js"></script>
+
+  <script src="/js/main.js"></script>
 </body>
 </html>

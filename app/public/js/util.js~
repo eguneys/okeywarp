@@ -1,0 +1,2 @@
+var stoneHeight = 64;
+var stoneWidth = 48;
