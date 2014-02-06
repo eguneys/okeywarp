@@ -1,0 +1,85 @@
+
+
+
+.stone1 {width:48px;height:64px;background-position:-0px -0px;background-repeat:no-repeat; position: absolute; display: inline-block;}
+
+.stone {background-image:url(https://weboyun.oyuncu.com/Areas/Games/Views/Okey/image/960/taslar.png);}
+
+.stonesContainer {width:745px;height:151px;background-position:-0px -20px;background-repeat:no-repeat;
+		 position: relative;
+		 left:100px;
+		}
+
+.stonesContainer {background-image:url(https://weboyun.oyuncu.com/Areas/Games/Views/Okey/image/960/okeysprite2c.960.png);}
+
+.middleStone {background-image:url(https://weboyun.oyuncu.com/Areas/Games/Views/Okey/image/960/taslar.png);}
+
+.drawStone {background-image:url(https://weboyun.oyuncu.com/Areas/Games/Views/Okey/image/960/taslar.png);}
+
+
+.playerGloss {width:90px;height:110px;background-position:-798px -7px;background-repeat:no-repeat;
+	}
+
+.playerImage {
+    top: 6px;
+    left: 6px;
+}
+
+.playerName {
+    top: 80px;
+    left: 6px;
+}
+
+.playerProgress {
+    top: -10px;
+    width: 84px;
+    height: 10px;
+}
+
+.hide {
+    display: none
+}
+
+.seat { 
+    display: inline-block; position: absolute;
+    }
+
+.seat > div {
+    display: inline-block; position: absolute;
+}
+
+.seat.ptop {
+    top: 20px; left: 430px;
+}
+.seat.pbottom {
+    top: 275px; left: 430px;
+}
+.seat.pleft {
+    top: 145px; left: 145px;
+}
+.seat.pright {
+    top: 145px; left: 735px;
+}
+
+.playerGloss {background-image:url(https://weboyun.oyuncu.com/Areas/Games/Views/Okey/image/960/okeysprite2c.960.png);}
+
+.playersContainer {
+    height: 400px;
+    width: 750px;
+}
+
+.gameTable {
+    background-image:url(https://weboyun.oyuncu.com/Areas/Games/Views/Okey/image/960/masa.jpg);
+}
+
+.throwStone {width:77px;height:88px;background-position:-453px -199px;background-repeat:no-repeat; position: absolute;}
+
+.throwLeft { top: 300px; left: 145px; }
+.throwBottom { top: 300px; left: 750px; }
+.throwRight { top: 25px; left: 750px; }
+.throwTop { top: 25px; left: 145px; }
+.drawMiddle { top: 165px; left: 525px; }
+.gosterge { top: 165px; left: 450px; }
+
+
+.middleContainer > div {background-image:url(https://weboyun.oyuncu.com/Areas/Games/Views/Okey/image/960/okeysprite2c.960.png);}

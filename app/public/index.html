@@ -6,30 +6,57 @@
 
   <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
 
+  <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  
+  <div class="container-full">
 
-  <div class="container" id="container">
-    
-  </div>
+    <nav class="navbar navbar-default">
+      <div class="navbar-header">
+        <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-collapse">
+          <span class="sr-only"> Toggle navigation</span>
+            <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                </button>
+        <a class="navbar-brand" href='#'> Simple App </a>
+      </div>
+
+      <div class="collapse navbar-collapse" id="navbar-collapse">
+        <ul class="nav navbar-nav" id="nav-item-container">
+          </ul>
+      </div>
+
+    </nav>
+
+    <div class="container" id="container">
+
+    </div>
+
+  </div> <!-- end container full -->  
+
 
   <script type='text/template' id="loginTemplate">
-    <div class="container">
-      Login
-      <button class="btn" id="loginButton">Login</button>
+    <div class="row">
+      <div class="col-md-4 col-md-offset-4 text-center">
+        <div class="well">
+          <form>
+            <label> Name </label>
+            <input type="text" class="form-control" id="nameText" placeholder="Enter your name">
+            <br>
+            <button id="loginButton" type="button" class="btn btn-primary"> Login </button>
+          </form>
+        </div>
+      </div>
     </div>
   </script>
 
   <script type='text/template' id="homeTemplate">
     <div class="container">
       <div class="row">
-	<div class="col-md-2">
-	  
-	</div>
-	<div class="col-md-10" id="homeTabs">
+	<div class="col-md-12" id="homeTabs">
 	  
 	</div>
       </div>
@@ -39,10 +66,64 @@
   <script type='text/template' id="homeTabTemplate">
     <div class="container">
       <div class="row">
-		<div class="col-md-8">
-		  <button class="btn btn-block btn-lg" id="playNow"> Play Now </button>
+		<div class="col-md-10">
+		  <button class="btn btn-lg" id="playNow"> Play Now </button>
+		  <button class="btn btn-lg" id="createRoomModal"> Create Room </button>
+
+		  <div class="modal fade" id="gamePropertiesModal">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                          <h4 class="modal-title">New Room</h4>
+                        </div>
+                        <div class="modal-body">
+
+                          <form class="form">
+                            <div class="form-group">
+                              <label> Score </label>
+                              <select rv-value=":newRoomProperties.Score">
+                                <option rv-each-score=":newRoomProperties.Scores" rv-value="score" rv-text="score"> </option>
+                              </select>
+                            </div>
+                            <div class="form-group">
+                              <label> Time </label>
+                              <select rv-value=":newRoomProperties.Time">
+                                <option rv-each-time=":newRoomProperties.Times" rv-value="time" rv-text="time"> </option>
+                              </select>
+                            </div>
+                            <div class="form-group">
+                              <label> Gosterge </label>
+                              <select rv-value=":newRoomProperties.Gosterge">
+                                <option rv-each-score=":newRoomProperties.boolValues" rv-value="score" rv-text="score"> </option>
+                              </select>
+                            </div>
+                            <div class="form-group">
+                              <label> Co-Op </label>
+                              <select rv-value=":newRoomProperties.Esli">
+                                <option rv-each-score=":newRoomProperties.boolValues" rv-value="score" rv-text="score"> </option>
+                              </select>
+                            </div>
+                            <div class="form-group">
+                              <label> Private </label>
+                              <select rv-value=":newRoomProperties.Ozel">
+                                <option rv-each-score=":newRoomProperties.boolValues" rv-value="score" rv-text="score"> </option>
+                              </select>
+                            </div>
+                          </form>
+
+
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                          <button type="button" id="createRoom" class="btn btn-primary">Create Room</button>
+                        </div>
+                      </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+                  </div><!-- /.modal -->
+
 		</div>
-		<div class="col-md-4">
+		<div class="col-md-2">
 		  <ul class="nav nav-tabs" id="UsersTab">
 		    <li class="active"><a href="#users" data-toggle="tab">Users</a></li>
 		    <li><a href="#games" data-toggle="tab">Games</a></li>
@@ -71,7 +152,12 @@
   </script>
 
   <script type='text/template' id="gameInfoTemplate">
-    <a> <%= name %> </a>
+    <a class="btn btn-link" id="joinRoomButton" gameid="<%= id %>"> <%= name %> </a>
+    <ul>
+      <% _.forEach(players, function(item) { %>
+      <%= item %>
+      <% }); %>
+    </ul>
   </script>
   
   <script type='text/template' id="gameLayoutTemplate">  
@@ -86,7 +172,6 @@
 		 <div class="throwStone throwTop"></div>
 		 <div class="throwStone throwRight"></div>
 		 <div class="throwStone drawMiddle">
-		   <div class="stone middleStone"></div>
 		 </div>
 		 <div class="throwStone gosterge">
 		   
@@ -108,7 +193,7 @@
       <div class="playerImage"> <img src="<%= photo %>"></img></div>
       <div class="playerGloss"></div>
       <div class="playerName"><%= name %></div>
-      <div class="playerProgress progress <% if (turnLeft == 0) { %> hide <% } %> ">
+      <div class="playerProgress progress <% if (turnLeft <= 0) { %> hide <% } %> ">
 	<div class="progress-bar" style="width: <%= turnLeft %>%"></div>
       </div>
     </div>
@@ -116,7 +201,7 @@
 
 
   <script type='text/template' id="stoneTemplate">
-    <div class="stone stone<%= stoneType %>"></div>
+    <div class="stone stone<%= stoneType %>" style="top: <%= top %>px; left: <%= left %>px;" stoneType="<%= stoneType %>" ></div>
   </script>
 
   <script src="/bower_components/jquery/jquery.min.js"></script>
@@ -128,11 +213,20 @@
   <script src="/bower_components/backbone/backbone.js"></script>
   <script src="/bower_components/marionette/lib/backbone.marionette.js"></script>
 
+  <script src="/bower_components/rivets/dist/rivets.min.js"></script>
+  <script src="/js/lib/rivets.extend.js"></script>
+
   <script src="/bower_components/greensock/src/uncompressed/TweenMax.js"></script>
   <script src="/js/lib/throwPropsPlugin.min.js"></script>
   <script src="/bower_components/greensock/src/uncompressed/utils/Draggable.js"></script>
 
+  <script src="/js/lib/hmac-sha1.js"></script>
+  <script src="/js/lib/appwarp.js"></script>
 
+  <script src="/js/warpclient.js"></script>
+
+  
+  <script src="/js/constants.js"></script>
   <script src="/js/models/main.js"></script>
   <script src="/js/models/game.js"></script>
 

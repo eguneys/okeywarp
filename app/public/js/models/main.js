@@ -25,7 +25,10 @@ var UsersCollection = Backbone.Collection.extend({
 
 var GameInfoModel = Backbone.Model.extend({
     defaults: {
-	name: ""
+	room: null,
+	id: 0,
+	name: "",
+	players: []
     }
 });
 

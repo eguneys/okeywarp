@@ -1,0 +1,18 @@
+
+GameConstants = {
+    SERVER_NAME: "AppWarpS2",
+    
+    PLAYER_HAND: 1,
+    
+    ME_DRAW_CARD_MIDDLE: 5,
+    ME_DRAW_CARD_SIDE: 6,
+    ME_THROW_CARD: 7,
+    ME_FINISHED: 8,
+
+    ME_DRAW_CARD_MIDDLE_INFO: 10,
+
+    GAME_STARTINFO: 12,
+
+    ME_AUTO_DRAW: 14,
+    ME_AUTO_THROW: 15
+}

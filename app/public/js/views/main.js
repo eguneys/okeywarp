@@ -1,4 +1,4 @@
-var GameApp = new Backbone.Marionette.Application();
+
 
 var HomeLayout = Backbone.Marionette.Layout.extend({
     template: "#homeTemplate",
@@ -12,12 +12,14 @@ var HomeLayout = Backbone.Marionette.Layout.extend({
 
 	this.usersInfoCollection = options.usersInfoCollection;
 	this.gamesInfoCollection = options.gamesInfoCollection;
+	this.homeModel = options.homeModel;
     },
 
     
     onShow: function() {
 	this.tabRegion.show(new HomeTabView({
 	    vent: this.vent,
+	    model: this.homeModel,
 	    usersCollection: this.usersInfoCollection,
 	    gamesCollection: this.gamesInfoCollection,
 	}));
@@ -28,12 +30,19 @@ var HomeTabView = Backbone.Marionette.Layout.extend({
     template: "#homeTabTemplate",
 
     events: {
-	"click #playNow": "playNowClick"
+	"click #playNow": "playNowClick",
+	"click #createRoomModal": "createRoomModalClick",
+	"click #createRoom": "createRoomClick",
+	"click #joinRoomButton": "joinRoomClick"
     },
     
     regions: {
 	usersRegion: "#userlist",
 	gamesRegion: "#gamelist",
+    },
+
+    ui: {
+	createRoomModal: "#gamePropertiesModal",
     },
 
     initialize: function(options) {
@@ -46,11 +55,30 @@ var HomeTabView = Backbone.Marionette.Layout.extend({
     onShow: function() {
 	this.usersRegion.show(new UsersCollectionView({ collection: this.usersCollection }));
 	this.gamesRegion.show(new GameInfoCollectionView({ collection: this.gamesCollection }));
-	
+
+	var that = this;
+	this.ui.createRoomModal.on('hidden.bs.modal', function() {
+	    if (that.createRoom) that.vent.trigger("createRoomClick");
+	});
+
+	rivets.bind(this.$el, this.model);
+    },
+
+    joinRoomClick: function(evt) {
+	this.vent.trigger("joinRoomClick", $(evt.target).attr("gameid"));
     },
 
     playNowClick: function() {
 	this.vent.trigger("playNowClick");
+    },
+
+    createRoomModalClick: function() {
+	this.ui.createRoomModal.modal('show');
+    },
+
+    createRoomClick: function() {
+	this.createRoom = true;
+	this.ui.createRoomModal.modal('hide');
     }
 });
 
@@ -82,53 +110,16 @@ var LoginView = Backbone.Marionette.ItemView.extend({
 	'click #loginButton': 'onLoginClick'
     },
 
+    ui: {
+	nameText: "#nameText"
+    },
+
     initialize: function(options) {
 	this.vent = options.vent;
     },
 
     onLoginClick: function(evt) {
-	this.vent.trigger("loginClick");
+	this.vent.trigger("loginClick", this.ui.nameText.val());
     }
 });
 
-
-
-GameApp.addRegions({
-    container: '#container'
-});
-
-
-GameApp.addInitializer(function() {
-    var viewEventBus = new Backbone.Wreqr.EventAggregator();
-
-    var usersInfoCollection = new UsersCollection();
-    var gamesInfoCollection = new GameInfoCollection();
-
-    var homeLayoutView;
-    
-    GameApp.container.show(new LoginView({vent: viewEventBus }));
-
-    viewEventBus.on("throwStone", function(stone) {
-	console.log(stone);
-    });
-
-    viewEventBus.on("loginClick", function() {
-
-	homeLayoutView = new HomeLayout({
-	    vent: viewEventBus,
-	    usersInfoCollection: usersInfoCollection,
-	    gamesInfoCollection: gamesInfoCollection,
-	});
-	
-	GameApp.container.show(homeLayoutView);
-    });
-
-    viewEventBus.on("playNowClick", function() {
-	gamesInfoCollection.add(new GameInfoModel());
-	var gameModel = new GameModel();
-
-	homeLayoutView.tabRegion.show(new GameLayout({model: gameModel}));
-
-    });
-   
-});
