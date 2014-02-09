@@ -62,6 +62,10 @@ var GameLayout = Backbone.Marionette.Layout.extend({
    var DrawStonesCollectionView = Backbone.Marionette.CollectionView.extend({
        itemView: StoneView,
 
+       initialize: function(options) {
+	   this.vent = options.vent;
+       },
+
        onAfterItemAdded: function(itemView) {
 	   var that = this;
 	   

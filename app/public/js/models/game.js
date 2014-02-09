@@ -41,7 +41,7 @@ var PlayerCollection = Backbone.Collection.extend({
 
 var StoneModel = Backbone.Model.extend({
     defaults: {
-	stoneType: "1",
+	stoneType: 1,
 	top: "0",
 	left: "0",
     }
@@ -84,3 +84,11 @@ var UserSides = [
     "top",
     "left"
 ];
+
+var PreviousSide = function(side) {
+    for (var i in UserSides) {
+	if (UserSides[i] == side) {
+	    return UserSides[(i - 1 + 4) % 4];
+	}
+    }
+};
