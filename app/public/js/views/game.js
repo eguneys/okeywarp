@@ -1,9 +1,81 @@
+var GameTabView = Backbone.Marionette.Layout.extend({
+    template: "#gameTabTemplate",
 
+    regions: {
+	gameLayoutRegion: "#gamelayout",
+	chatLayoutRegion: "#chatlayout"
+    },
+
+    initialize: function(options) {
+	this.vent = options.vent;
+	this.gameModel = options.gameModel;
+    },
+
+    onShow: function() {
+	this.gameLayoutRegion.show(new GameLayout({ model: this.gameModel, vent: this.vent }));
+	this.chatLayoutRegion.show(new GameChatLayout({ model: this.gameModel.get("chatModel"), vent: this.vent }));
+    }
+});
+
+var GameChatLayout = Backbone.Marionette.Layout.extend({
+    template: "#gameChatTemplate",
+
+    regions: {
+	chatRegion: "#gamechatList",
+	userRegion: "#gameuserList"
+    },
+
+    events: {
+	"keypress #chatbox": "onChatPress"
+    },
+
+    ui: {
+	chatbox: "#chatbox"
+    },
+    
+    initialize: function(options) {
+	this.vent = options.vent;
+    },
+
+    onShow: function() {
+	this.chatRegion.show(new ChatCollectionView({ collection: this.model.chats()}));
+    },
+
+    onChatPress: function(evt, value) {
+	if (evt.charCode == 13) {
+	    this.vent.trigger("chatRequest", this.ui.chatbox.val());
+	    this.ui.chatbox.val("");
+	    return false;
+	}
+    },
+
+    chatAdded: function() {
+	console.log("yey");
+    }
+
+    
+
+});
+
+var ChatView = Backbone.Marionette.ItemView.extend({
+    template: "#chatTemplate",
+    className: "list-group-item chat-item"
+});
+
+var ChatCollectionView = Backbone.Marionette.CollectionView.extend({
+    itemView: ChatView,
+
+    onAfterItemAdded: function(itemView) {
+	$(".nano").nanoScroller();
+	$(".nano").nanoScroller({ scroll: "bottom" });
+    }
+});
 
 var GameLayout = Backbone.Marionette.Layout.extend({
     template: "#gameLayoutTemplate",
 
     regions: {
+	topRegion: ".gameHud",
 	playersRegion: ".playersContainer",
 	stonesRegion: ".stonesContainer",
 
@@ -22,23 +94,60 @@ var GameLayout = Backbone.Marionette.Layout.extend({
     },
 
     onShow: function() {
-	this.playersRegion.show(new PlayersCollectionView({ collection: this.model.players}));
 
-	this.stonesRegion.show(new StonesCollectionView({ vent: this.vent, collection: this.model.stones }));
+	this.topRegion.show(new GameHudView({vent: this.vent}));
 	
-	this.throwBottomRegion.show(new ThrowStonesCollectionView({ collection: this.model.throwStones.bottom }));
-	this.throwTopRegion.show(new ThrowStonesCollectionView({ collection: this.model.throwStones.top }));
-	this.throwRightRegion.show(new ThrowStonesCollectionView({ collection: this.model.throwStones.right }));
+	this.playersRegion.show(new PlayersCollectionView({ collection: this.model.players()}));
+
+	this.stonesRegion.show(new StonesCollectionView({ vent: this.vent, collection: this.model.stones() }));
 	
-	this.throwLeftRegion.show(new DrawStonesCollectionView({ collection: this.model.throwStones.left, vent: this.vent }));
+	this.throwBottomRegion.show(new ThrowStonesCollectionView({ collection: this.model.throwStones().bottom }));
+	this.throwTopRegion.show(new ThrowStonesCollectionView({ collection: this.model.throwStones().top }));
+	this.throwRightRegion.show(new ThrowStonesCollectionView({ collection: this.model.throwStones().right }));
+	
+	this.throwLeftRegion.show(new DrawStonesCollectionView({ collection: this.model.throwStones().left, vent: this.vent }));
 
 	
-	this.drawMiddleRegion.show(new MiddleStonesCollectionView({ collection: this.model.middleStones, vent: this.vent }));
+	this.drawMiddleRegion.show(new MiddleStonesCollectionView({ collection: this.model.middleStones(), vent: this.vent }));
 
 
 	this.gostergeRegion.show(new StoneView({ model: this.model.get('gostergeStone')}));
 	
        },
+   });
+
+   var GameHudView = Backbone.Marionette.ItemView.extend({
+       template: "#gameHudTemplate",
+
+       events: {
+	   "click #leaveRoomModalButton": "leaveRoomModalButtonClick",
+	   "click #leaveRoomButton": "leaveRoomButtonClick"
+       },
+
+       ui: {
+	   leaveRoomModal: "#leaveRoomModal"
+       },
+
+       initialize: function(options) {
+	   this.vent = options.vent;
+       },
+
+       onShow: function() {
+	   var that = this;
+
+	   this.ui.leaveRoomModal.on('hidden.bs.modal', function() {
+	       if (that.leaveRoom) that.vent.trigger("leaveRoomClick");
+	   });
+       },
+
+       leaveRoomModalButtonClick: function() {
+	   this.ui.leaveRoomModal.modal('show');
+       },
+
+       leaveRoomButtonClick: function() {
+	   this.leaveRoom = true;
+	   this.ui.leaveRoomModal.modal('hide');
+       }
    });
 
    var StoneView = Backbone.Marionette.ItemView.extend({
@@ -203,10 +312,15 @@ var PlayerView = Backbone.Marionette.ItemView.extend({
     template: "#playerTemplate",
 
     modelEvents: {
-	'change:turnLeft': 'turnLeftChanged'
+	'change:turnLeft': 'turnLeftChanged',
+	'change:side': 'sideChanged'
     },
 
     turnLeftChanged: function() {
+	this.render();
+    },
+
+    sideChanged: function() {
 	this.render();
     }
     

@@ -4,7 +4,7 @@ var HomeLayout = Backbone.Marionette.Layout.extend({
     template: "#homeTemplate",
 
     regions: {
-	tabRegion: "#homeTabs"
+	tabRegion: "#homeTabs",
     },
 
     initialize: function(options) {
@@ -23,6 +23,16 @@ var HomeLayout = Backbone.Marionette.Layout.extend({
 	    usersCollection: this.usersInfoCollection,
 	    gamesCollection: this.gamesInfoCollection,
 	}));
+
+	
+    }
+});
+
+var TopBarView = Backbone.Marionette.ItemView.extend({
+    template: "#topbarTemplate",
+
+    initialize: function(options) {
+	this.vent = options.vent;
     }
 });
 
@@ -107,7 +117,8 @@ var LoginView = Backbone.Marionette.ItemView.extend({
     template: '#loginTemplate',
 
     events: {
-	'click #loginButton': 'onLoginClick'
+	'click #loginButton': 'onLoginClick',
+	'keypress #nameText': 'onKeyPress'
     },
 
     ui: {
@@ -120,6 +131,13 @@ var LoginView = Backbone.Marionette.ItemView.extend({
 
     onLoginClick: function(evt) {
 	this.vent.trigger("loginClick", this.ui.nameText.val());
+    },
+
+    onKeyPress: function(evt) {
+	if (evt.charCode == 13) {
+	    this.vent.trigger("loginClick", this.ui.nameText.val());
+	    return false;
+	}
     }
 });
 

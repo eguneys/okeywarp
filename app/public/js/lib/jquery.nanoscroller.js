@@ -1,6 +1,6 @@
-/*! nanoScrollerJS - v0.7.6 - 2013
+/*! nanoScrollerJS - v0.7.6 - 2014
 * http://jamesflorentino.github.com/nanoScrollerJS/
-* Copyright (c) 2013 James Florentino; Licensed MIT */
+* Copyright (c) 2014 James Florentino; Licensed MIT */
 (function($, window, document) {
   "use strict";
   var BROWSER_IS_IE7, BROWSER_SCROLLBAR_WIDTH, DOMSCROLL, DOWN, DRAG, KEYDOWN, KEYUP, MOUSEDOWN, MOUSEMOVE, MOUSEUP, MOUSEWHEEL, NanoScroll, PANEDOWN, RESIZE, SCROLL, SCROLLBAR, TOUCHMOVE, UP, WHEEL, cAF, defaults, getBrowserScrollbarWidth, hasTransform, isFFWithBuggyScrollbar, rAF, transform, _elementStyle, _prefixStyle, _vendor;
@@ -9,26 +9,26 @@
       a classname for the pane element.
       @property paneClass
       @type String
-      @default 'pane'
+      @default 'nano-pane'
     */
 
-    paneClass: 'pane',
+    paneClass: 'nano-pane',
     /**
       a classname for the slider element.
       @property sliderClass
       @type String
-      @default 'slider'
+      @default 'nano-slider'
     */
 
-    sliderClass: 'slider',
+    sliderClass: 'nano-slider',
     /**
       a classname for the content element.
       @property contentClass
       @type String
-      @default 'content'
+      @default 'nano-content'
     */
 
-    contentClass: 'content',
+    contentClass: 'nano-content',
     /**
       a setting to enable native scrolling in iOS devices.
       @property iOSNativeScrolling
@@ -353,7 +353,7 @@
 
     /**
       Prevents the rest of the page being scrolled
-      when user scrolls the `.content` element.
+      when user scrolls the `.nano-content` element.
       @method preventScrolling
       @param event {Event}
       @param direction {String} Scroll direction (up or down)

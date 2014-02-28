@@ -126,6 +126,11 @@
     background-image:url(https://weboyun.oyuncu.com/Areas/Games/Views/Okey/image/960/masa.jpg);
 }
 
+.gameTable .gameHUD {
+    top: 20px; left: 20px;
+    position: absolute;
+}
+
 .throwStone {width:77px;height:88px;background-position:-453px -199px;background-repeat:no-repeat; position: absolute;}
 
 .throwLeft { top: 300px; left: 145px; }

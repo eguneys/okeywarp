@@ -6,6 +6,8 @@
 
   <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
 
+  <link rel="stylesheet" href="css/nanoscroller.css">
+
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -31,11 +33,26 @@
 
     </nav>
 
+
+    <div class="container" id="topbar">
+    </div>
+    
     <div class="container" id="container">
 
     </div>
 
-  </div> <!-- end container full -->  
+  </div> <!-- end container full -->
+
+  <script type='text/template' id="topbarTemplate">
+    <div class="row">
+      <div class="col-md-12">
+	  <div>
+	    <p> <%= name %> </p>
+	    <p class="label"> <%= score %> </p>
+	  </div>
+      </div>
+    </div>    
+  </script>
 
 
   <script type='text/template' id="loginTemplate">
@@ -62,11 +79,11 @@
       </div>
     </div>
   </script>
-  
+
   <script type='text/template' id="homeTabTemplate">
     <div class="container">
       <div class="row">
-		<div class="col-md-10">
+		<div class="col-md-8">
 		  <button class="btn btn-lg" id="playNow"> Play Now </button>
 		  <button class="btn btn-lg" id="createRoomModal"> Create Room </button>
 
@@ -123,7 +140,7 @@
                   </div><!-- /.modal -->
 
 		</div>
-		<div class="col-md-2">
+		<div class="col-md-4">
 		  <ul class="nav nav-tabs" id="UsersTab">
 		    <li class="active"><a href="#users" data-toggle="tab">Users</a></li>
 		    <li><a href="#games" data-toggle="tab">Games</a></li>
@@ -143,6 +160,52 @@
 		</div>
 	      </div>
     </div>
+  </script>
+
+
+  <script type='text/template' id="gameTabTemplate">
+    <div class="container">
+      <div class="row">
+	<div class="col-md-12">
+	  <div id="gamelayout"></div>
+	</div>
+      </div>
+      <div class="row">
+	<div class="col-md-12">
+	  <div id="chatlayout"></div>
+	</div>
+      </div>	
+    </div>      
+  </script>
+
+  <script type="text/template" id="chatTemplate">
+    <p> <a class="btn btn-link"> <%= sender %> </a> : <%= message %> </p>
+  </script>			
+
+  <script type='text/template' id="gameChatTemplate">
+    <div class="container">
+      <div class="row">
+	<div class="col-md-4">
+	  <form class="form">
+	    <div class="form-group">
+	      <input type="text" class="form-control" id="chatbox"></input>
+	    </div>
+	  </form>
+	  <div class="nano">
+	    <div class="nano-content">
+	      <div class="list-group" id="gamechatList">
+		
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	<div class="col-md-8">
+	  <div class="list-group" id="gameuserList">
+	    
+	  </div>
+	</div>
+      </div>
+    </div>          
   </script>
 
   <script type='text/template' id="userTemplate">
@@ -166,6 +229,9 @@
 	   <div class="col-md-12">
 	     <div class="gameTable">
 
+	       <div class="gameHud">
+	       </div>
+	       
 	       <div class="middleContainer">
 		 <div class="throwStone throwLeft"></div>
 		 <div class="throwStone throwBottom"></div>
@@ -188,6 +254,28 @@
        </div>
   </script>
 
+  <script type='text/template' id="gameHudTemplate">
+    <button id="leaveRoomModalButton" class="btn"> Leave </button>
+
+    <div class="modal fade" id="leaveRoomModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Leave Room</h4>
+          </div>
+          <div class="modal-body">
+	    <p> Are you sure? </p>
+	  </div>
+	  <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" id="leaveRoomButton" class="btn btn-primary">Leave Room</button>
+	  </div>
+	</div>
+      </div>
+    </div>
+  </script>
+
   <script type='text/template' id="playerTemplate">
     <div class="seat p<%=side%>">
       <div class="playerImage"> <img src="<%= photo %>"></img></div>
@@ -208,6 +296,8 @@
   <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 
   <script src="/bower_components/smartJQueryHitTest/src/e-smart-hittest-jquery.min.js"></script>
+  <script src="/js/lib/jquery.nanoscroller.js"></script>
+  
   
   <script src="/bower_components/underscore/underscore.js"></script>
   <script src="/bower_components/backbone/backbone.js"></script>

@@ -169,6 +169,11 @@ var ResponseHandlers = function(base, eventBus) {
     };
     
     self.onLeaveRoomDone = function(room) {
+	if (room.getResult() == AppWarp.ResultCode.Success) {
+	    self._eventBus.trigger("leaveRoomDone", room);
+	} else {
+	    console.log('err: ' + room.getResult());
+	}
     };
 
     self.onUnsubscribeRoomDone = function(room) {

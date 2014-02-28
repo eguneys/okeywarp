@@ -11,10 +11,11 @@ function MainController() {
 	sideStone: { x: 0, y: 0 }
     };
     
-    self.usersInfoCollection = new UsersCollection();
+    self.usersInfoCollection = new UserCollection();
     self.gamesInfoCollection = new GameInfoCollection();
 
     self.homeModel = new HomeModel();
+    self.userModel = new UserModel();
 
     self.gameModel = null;
 
@@ -23,7 +24,8 @@ function MainController() {
 	self.MainApp = new MainApp({ eventBus: self.appEventBus });
 
 	self.GameApp.addRegions({
-	    container: '#container'
+	    container: '#container',
+	    topbar: '#topbar'
 	});
 
 	self.GameApp.addInitializer(function() {
@@ -79,10 +81,19 @@ function MainController() {
 	self.MainApp.joinRoom(id);
     });
 
+
+    self.viewEventBus.on("leaveRoomClick", function() {
+	var id = self.gameModel.get('room').getRoomId();
+	self.MainApp.leaveRoom(id);
+    });
     
 
 
     self.appEventBus.on("connectDone", function() {
+	self.GameApp.topbar.show(new TopBarView({
+	    vent: self.viewEventBus,
+	    model: self.userModel
+	}));
 	self.GameApp.container.show(new HomeLayout({
 	    vent: self.viewEventBus,
 	    homeModel: self.homeModel,
@@ -110,7 +121,7 @@ function MainController() {
 	    self.gameModel.set("MySide", myside);
 
 	    for (var i in usernames) {
-                self.gameModel.players.add(new PlayerModel({ name: usernames[i], side: UserSides[(i - myside + 4) % 4] }));
+                self.gameModel.players().add(new PlayerModel({ name: usernames[i], side: UserSides[(i - myside + 4) % 4] }));
 	    }
 	    
             self.MainApp.sendChat("AppWarp2Sync ready");
@@ -129,7 +140,7 @@ function MainController() {
 	var once = true;
 	
 	self.gameModel.on("change:Turn", function() {
-	    self.gameModel.players.each(function(item) {
+	    self.gameModel.players().each(function(item) {
 		item.set("turnLeft", 0);
 	    });
 	    
@@ -153,64 +164,76 @@ function MainController() {
 	});
 
 	
-	self.GameApp.container.show(new GameLayout({ model: self.gameModel, vent: self.viewEventBus }));
+	self.GameApp.container.show(new GameTabView({ gameModel: self.gameModel, vent: self.viewEventBus }));
 
 	self.MainApp.getLiveRoomInfo(room.getRoomId());
     });
 
     
-    self.appEventBus.on("leaveRoomDone", function() {
-	
+    self.appEventBus.on("leaveRoomDone", function(room) {
+	self.GameApp.container.show(new HomeLayout({
+	    vent: self.viewEventBus,
+	    homeModel: self.homeModel,
+	    usersInfoCollection: self.usersInfoCollection,
+	    gamesInfoCollection: self.gamesInfoCollection
+	}));
     });
 
     
     self.appEventBus.on("chatReceived", function(chat) {
 	if (self.gameModel) {
+	    
 	    if (chat.getSender() == GameConstants.SERVER_NAME) {
 		var command = JSON.parse(chat.getChat());
 		switch(command.type) {
 		    case GameConstants.PLAYER_HAND: {
 			var stones = command[self.gameModel.myPlayer().get('name')];
 			console.log(stones);
-			self.gameModel.stones.reset(_.map(stones, function(item, index) {
+			self.gameModel.stones().reset(_.map(stones, function(item, index) {
 			    return new StoneModel({ stoneType: item , left: (index + 1) * stoneWidth });
 			}));
 		    } break;
 		    case GameConstants.GAME_STARTINFO: {
 			self.gameModel.set("gosterge", new StoneModel({ stoneType: command.gosterge }));
-			self.gameModel.middleStones.add(new StoneModel({ stoneType: "54"}));
+			self.gameModel.middleStones().add(new StoneModel({ stoneType: "54"}));
 		    } break;
 		    case GameConstants.ME_DRAW_CARD_MIDDLE: {
 			
 		    } break;
 		    case GameConstants.ME_DRAW_CARD_MIDDLE_INFO: {
-			self.gameModel.middleStones.pop();
-			self.gameModel.middleStones.add(new StoneModel({ stoneType: "54" }));
-			self.gameModel.stones.add(new StoneModel({ stoneType: command.card - 0, top: self.lastOffset.middleStone.y, left: self.lastOffset.middleStone.x }));
+			self.gameModel.middleStones().pop();
+			self.gameModel.middleStones().add(new StoneModel({ stoneType: "54" }));
+			self.gameModel.stones().add(new StoneModel({ stoneType: command.card - 0, top: self.lastOffset.middleStone.y, left: self.lastOffset.middleStone.x }));
 			
 		    } break;
 		    case GameConstants.ME_DRAW_CARD_SIDE: {
 			var previousSide = PreviousSide(self.gameModel.turnPlayer().get("side"));
-			var stone = self.gameModel.throwStones[previousSide].pop();
+			var stone = self.gameModel.throwStones()[previousSide].pop();
 			var stoneType = stone.get("stoneType");
 
 			if (self.gameModel.turnPlayer().get("side") == "bottom") {
-			    self.gameModel.stones.add(new StoneModel({ stoneType: stoneType - 0, top: self.lastOffset.sideStone.y, left: self.lastOffset.sideStone.x }));
+			    self.gameModel.stones().add(new StoneModel({ stoneType: stoneType - 0, top: self.lastOffset.sideStone.y, left: self.lastOffset.sideStone.x }));
 			}
 			
 		    } break;
 		    case GameConstants.ME_AUTO_THROW: {
 			var previousTurn = self.gameModel.turnPlayer();
 			
-			self.gameModel.throwStones[previousTurn.get("side")].add(new StoneModel({ stoneType: command.card }));
+			self.gameModel.throwStones()[previousTurn.get("side")].add(new StoneModel({ stoneType: command.card }));
 
 			if (previousTurn.get("side") == "bottom") {
-			    var stone = self.gameModel.stones.findWhere({ stoneType: command.card - 0 });
-			    self.gameModel.stones.remove(stone);
+			    var stone = self.gameModel.stones().findWhere({ stoneType: command.card - 0 });
+			    self.gameModel.stones().remove(stone);
 			}
 
 		    } break;
 		}
+	    }
+	    
+	    else {
+		var chatModel = self.gameModel.get("chatModel");
+		
+		chatModel.chats().push(new ChatModel({ sender: chat.getSender(), message: chat.getChat() }));
 	    }
 	}
     });
@@ -218,17 +241,42 @@ function MainController() {
     
     self.appEventBus.on("userJoinedRoom", function(args) {
 	if (self.gameModel && self.gameModel.get("room").getRoomId() == args.room.getRoomId()) {
-	    var i = self.gameModel.players.length;
+	    var i = self.gameModel.players().length;
 	    var myside = self.gameModel.get("MySide");
 	    
-            self.gameModel.players.add(new PlayerModel({ name: args.username, side: UserSides[(i - myside + 4) % 4] }));
+            self.gameModel.players().add(new PlayerModel({ name: args.username, side: UserSides[(i - myside + 4) % 4] }));
+
         }
     });
 
     
     self.appEventBus.on("userLeftRoom", function(args) {
 	if (self.gameModel && self.gameModel.get("room").getRoomId() == args.room.getRoomId()) {
-	    self.gameModel.players.remove(self.gameModel.players.findWhere({ name: args.username }));
+	    var player = self.gameModel.players().findWhere({ name: args.username });
+	    self.gameModel.players().remove(player);
+
+	    var myside = self.gameModel.get("MySide");
+
+	    var leftside = (UserSides.indexOf(player.get("side")) + myside) % 4;
+
+	    var leftsideBackup = leftside;
+
+	    while (++leftside < 4) {
+		var decreasePlayer = self.gameModel.players().findWhere({ side: UserSides[(leftside - myside + 4) % 4] });
+
+		if (!decreasePlayer) break;
+
+		decreasePlayer.set("side", PreviousSide(decreasePlayer.get("side")));
+	    }
+
+	    if (myside - 0 > leftsideBackup - 0) {
+		self.gameModel.players().forEach(function(item) {
+		    item.set("side", NextSide(item.get("side")));
+		});
+
+		self.gameModel.set("MySide", myside - 1);
+	    }
+	    
         }	
     });
     
@@ -250,11 +298,11 @@ function MainController() {
 	
 	var data = JSON.parse(move.getMoveData());
 
-	self.gameModel.throwStones[previousTurn.get("side")].add(new StoneModel({ stoneType: data.card }));
+	self.gameModel.throwStones()[previousTurn.get("side")].add(new StoneModel({ stoneType: data.card }));
 
 	if (previousTurn.get("side") == "bottom") {
-	    var stone = self.gameModel.stones.findWhere({ stoneType: data.card - 0 });
-	    self.gameModel.stones.remove(stone);
+	    var stone = self.gameModel.stones().findWhere({ stoneType: data.card - 0 });
+	    self.gameModel.stones().remove(stone);
 	}
     });
 
